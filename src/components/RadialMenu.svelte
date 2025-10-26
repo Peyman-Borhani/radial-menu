@@ -154,11 +154,11 @@
 		{style}
 		transition:scale|global={{ start: 0.9, duration: 150, easing: sineInOut }}
 	>
-		<div class="ring" data-has-selected={selected !== null} />
+		<div class="ring" data-has-selected={selected !== null}></div>
 		<ul class="radial-menu">
 			{#each menuItems.slice(0, menuItems.length) as item, i}
 				<li class="item" style={getItemStyle(i)} data-selected={selected === i}>
-					<i class={`ti ti-${item.icon}`} />
+					<i class={`ti ti-${item.icon}`}></i>
 				</li>
 			{/each}
 		</ul>
