@@ -42,7 +42,7 @@
 </div>
 
 {#if !holdingMouse}
-	<p class="tutorial" transition:fade={{ duration: 150 }}>
+	<p class="tutorial" transition:fade|global={{ duration: 150 }}>
 		Click and drag anywhere to see the menu.
 	</p>
 {/if}

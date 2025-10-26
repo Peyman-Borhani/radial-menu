@@ -152,7 +152,7 @@
 	<div
 		class="radial-menu-wrapper"
 		{style}
-		transition:scale={{ start: 0.9, duration: 150, easing: sineInOut }}
+		transition:scale|global={{ start: 0.9, duration: 150, easing: sineInOut }}
 	>
 		<div class="ring" data-has-selected={selected !== null} />
 		<ul class="radial-menu">
