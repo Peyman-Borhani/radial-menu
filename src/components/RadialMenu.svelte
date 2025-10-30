@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	export type MenuItem = {
 		icon: string;
 		label: string;
@@ -6,30 +6,36 @@
 </script>
 
 <script lang="ts">
+
 	import { getAngleDifference, normalizeAngle } from '$/helpers/math';
 	import { setUserSelect } from '$/helpers/style';
 	import { sineInOut } from 'svelte/easing';
-	import { spring } from 'svelte/motion';
+	import { Spring } from 'svelte/motion';
 	import { scale } from 'svelte/transition';
 
 	// Constants
 	const ITEM_OFFSET = 90;
 
-	// Props
-	export let menuItems: MenuItem[];
+	
+	interface Props {
+		// Props
+		menuItems: MenuItem[];
+	}
+
+	let { menuItems }: Props = $props();
 
 	// Variables
-	let selected: number | null = null;
-	let clickCoords: [number, number] | null = null;
-	let mouseCoords: [number, number] | null = null;
-	let innerEl: HTMLElement | null = null;
-	let easedRingAngle = spring(-1, {
+	let selected: number | null = $state(null);
+	let clickCoords: [number, number] | null = $state(null);
+	let mouseCoords: [number, number] | null = $state(null);
+	let innerEl: HTMLElement | null = $state(null);
+	let easedRingAngle = new Spring(-1, {
 		stiffness: 0.04,
 		damping: 0.19,
 	});
 
 	// Reactive values
-	$: [skew, top, left, ringAngleOffset, ringPercent] = (function getProperties() {
+	let [skew, top, left, ringAngleOffset, ringPercent] = $derived((function getProperties() {
 		switch (menuItems.length) {
 			case 3:
 				return [-30, 48, 40, 60, 66.6];
@@ -46,30 +52,32 @@
 			default:
 				return [0, 0, 0, 0, 0];
 		}
-	})();
+	})());
 
-	$: selected = (function getMouseSelection() {
-		// Given the distance between the center of the menu (clickCoords) and the mouse,
-		// selects the given menu item.
-		if (clickCoords === null || mouseCoords === null || !innerEl) return null;
+	$effect.pre(()=> {
+		selected = (function getMouseSelection() {
+			// Given the distance between the center of the menu (clickCoords) and the mouse,
+			// selects the given menu item.
+			if (clickCoords === null || mouseCoords === null || !innerEl) return null;
 
-		const [clickX, clickY] = clickCoords;
-		const [mouseX, mouseY] = mouseCoords;
-		const dx = mouseX - clickX;
-		const dy = mouseY - clickY;
+			const [clickX, clickY] = clickCoords;
+			const [mouseX, mouseY] = mouseCoords;
+			const dx = mouseX - clickX;
+			const dy = mouseY - clickY;
 
-		const distance = Math.sqrt(dx * dx + dy * dy);
-		const innerRadius = innerEl.getBoundingClientRect().width / 2;
-		if (distance < innerRadius) return null;
+			const distance = Math.sqrt(dx * dx + dy * dy);
+			const innerRadius = innerEl.getBoundingClientRect().width / 2;
+			if (distance < innerRadius) return null;
 
-		const angle = Math.atan2(dy, dx) * (180 / Math.PI);
-		const normalizedAngle = normalizeAngle(angle - ITEM_OFFSET);
-		const stepAngle = 360 / menuItems.length;
+			const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+			const normalizedAngle = normalizeAngle(angle - ITEM_OFFSET);
+			const stepAngle = 360 / menuItems.length;
 
-		return Math.floor(normalizedAngle / stepAngle);
-	})();
+			return Math.floor(normalizedAngle / stepAngle);
+		})();
+	});
 
-	$: ringAngle = (function getRingAngle(): number | null {
+	let ringAngle = $derived.by((): number | null => {
 		if (selected === null) return null;
 
 		const newAngle = normalizeAngle((360 / menuItems.length) * selected - ringAngleOffset);
@@ -79,9 +87,9 @@
 		const diff = getAngleDifference(oldAngle, newAngle);
 
 		return ringAngle + diff;
-	})();
+	});
 
-	$: {
+	$effect.pre(() => {
 		if (selected === null) {
 			// When nothing is selected, the angle should be reset.
 			easedRingAngle.set(-1, { hard: true });
@@ -92,9 +100,9 @@
 			// Otherwise, we want to animate to the new angle.
 			easedRingAngle.set(ringAngle || 0);
 		}
-	}
+	});
 
-	$: style = [
+	let style = $derived([
 		`--skew: ${skew}deg`,
 		`--top: ${top}%`,
 		`--left: ${left}%`,
@@ -102,7 +110,7 @@
 		`--mouseY: ${clickCoords ? clickCoords[1] : 0}px`,
 		`--selectedAngle: ${$easedRingAngle}deg`,
 		`--ringPercent: ${ringPercent}%`,
-	].join(';');
+	].join(';'));
 
 	// Event Handlers
 	function getItemStyle(i: number) {
@@ -127,20 +135,20 @@
 </script>
 
 <svelte:window
-	on:touchstart={onTouchStart}
-	on:touchmove={(e) => {
-		mouseCoords = [e.touches[0].clientX, e.touches[0].clientY];
+	ontouchstart={onTouchStart}
+	ontouchmove ={ (e)=> {
+		mouseCoords =[e.touches[0].clientX, e.touches[0].clientY];
 	}}
-	on:touchend={() => {
+	ontouchend  ={ ()=> {
 		clickCoords = null;
 		mouseCoords = null;
 		setUserSelect(document.body, 'initial');
 	}}
-	on:mousedown={onMouseDown}
-	on:mousemove={(e) => {
-		mouseCoords = [e.clientX, e.clientY];
+	onmousedown ={onMouseDown}
+	onmousemove ={ (e)=> {
+		mouseCoords =[e.clientX, e.clientY];
 	}}
-	on:mouseup={() => {
+	onmouseup ={ ()=> {
 		clickCoords = null;
 		mouseCoords = null;
 		document.body.style.cursor = 'initial';

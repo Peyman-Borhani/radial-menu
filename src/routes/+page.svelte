@@ -18,9 +18,9 @@
 		{ icon: 'printer', label: 'Print' },
 	] satisfies MenuItem[];
 
-	let numItems = 6;
+	let numItems = $state(6);
 
-	let holdingMouse = false;
+	let holdingMouse = $state(false);
 
 	function onMouseDown(e: MouseEvent) {
 		const el = e.target as HTMLElement;
@@ -30,10 +30,8 @@
 </script>
 
 <svelte:window
-	on:mousedown={onMouseDown}
-	on:mouseup={() => {
-		holdingMouse = false;
-	}}
+	onmousedown={onMouseDown}
+	onmouseup={()=> {holdingMouse = false}}
 />
 
 <div class="input-wrapper">
@@ -42,7 +40,7 @@
 </div>
 
 {#if !holdingMouse}
-	<p class="tutorial" transition:fade={{ duration: 150 }}>
+	<p class="tutorial" transition:fade|global={{ duration: 150 }}>
 		Click and drag anywhere to see the menu.
 	</p>
 {/if}
