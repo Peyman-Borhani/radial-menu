@@ -6,7 +6,6 @@
 </script>
 
 <script lang="ts">
-
 	import { getAngleDifference, normalizeAngle } from '$/helpers/math';
 	import { setUserSelect } from '$/helpers/style';
 	import { sineInOut } from 'svelte/easing';
@@ -28,7 +27,9 @@
 	let selected: number | null = $state(null);
 	let clickCoords: [number, number] | null = $state(null);
 	let mouseCoords: [number, number] | null = $state(null);
+    
 	let innerEl: HTMLElement | null = $state(null);
+
 	let easedRingAngle = new Spring(-1, {
 		stiffness: 0.04,
 		damping: 0.19,
@@ -92,10 +93,10 @@
 	$effect.pre(() => {
 		if (selected === null) {
 			// When nothing is selected, the angle should be reset.
-			easedRingAngle.set(-1, { hard: true });
-		} else if ($easedRingAngle === -1) {
+			easedRingAngle.set(-1);
+		} else if (easedRingAngle.current === -1) {
 			// Coming from a reset state, no need to animate, just show the new angle.
-			easedRingAngle.set(ringAngle || 0, { hard: true });
+			easedRingAngle.set(ringAngle || 0);
 		} else {
 			// Otherwise, we want to animate to the new angle.
 			easedRingAngle.set(ringAngle || 0);
@@ -108,7 +109,7 @@
 		`--left: ${left}%`,
 		`--mouseX: ${clickCoords ? clickCoords[0] : 0}px`,
 		`--mouseY: ${clickCoords ? clickCoords[1] : 0}px`,
-		`--selectedAngle: ${$easedRingAngle}deg`,
+		`--selectedAngle: ${easedRingAngle.current}deg`,
 		`--ringPercent: ${ringPercent}%`,
 	].join(';'));
 
@@ -177,6 +178,7 @@
 		</div>
 	</div>
 {/if}
+
 
 <style lang="scss">
 	$size-num: 300;
