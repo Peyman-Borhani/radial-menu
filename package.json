@@ -1,6 +1,6 @@
 {
   "name": "svelte-radial-menu",
-  "version": "0.0.2",
+  "version": "0.0.5",
   "private": true,
   "scripts": {
     "dev": "vite dev",
@@ -14,9 +14,9 @@
     "build:pollen": "npx pollen"
   },
   "devDependencies": {
-    "@iconify/json": "^2.2.401",
+    "@iconify/json": "^2.2.402",
     "@sveltejs/adapter-auto": "^7.0.0",
-    "@sveltejs/kit": "^2.48.3",
+    "@sveltejs/kit": "^2.48.4",
     "@sveltejs/vite-plugin-svelte": "^6.2.1",
     "@typescript-eslint/eslint-plugin": "^8.46.2",
     "@typescript-eslint/parser": "^8.46.2",
@@ -27,7 +27,7 @@
     "prettier": "^3.6.2",
     "prettier-plugin-svelte": "^3.4.0",
     "sass": "^1.93.2",
-    "svelte": "^5.43.0",
+    "svelte": "^5.43.2",
     "svelte-check": "^4.3.3",
     "svelte-preprocess": "^6.0.3",
     "tslib": "^2.8.1",
